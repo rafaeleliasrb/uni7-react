@@ -38,6 +38,9 @@ class Estoria extends Component {
                             <a className="right" href="#"
                                 onClick={this._handleClick.bind(this)}>{textoBotao}</a>
                             <br/>
+                            <a className="right" href="#"
+                                onClick={this._handleDelete.bind(this)}>Excluir</a>
+                            <br/>
                         </div>
                     </div>
                 </div>
@@ -45,6 +48,10 @@ class Estoria extends Component {
         );
     }
     
+    _handleDelete(event) {
+        event.preventDefault();
+        this.props.onDelete(this.props.id);
+    }
 }
 
 export default Estoria;

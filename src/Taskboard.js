@@ -1,16 +1,26 @@
 import React, { Component } from 'react';
 import Estoria from './Estoria';
 import EstoriaForm from './EstoriaForm';
+import jQuery from 'jquery';
 
 class Taskboard extends Component {
     constructor() {
         super();
         this.state = {
-            estorias : [
-                {id: 1, titulo: 'Contratar seguro', descricao: 'Como usuário...', pontos: 10},
-                {id: 2, titulo: 'Cancelar seguro', descricao: 'Como usuário...', pontos: 20}
-            ]
+            estorias : []
         }
+    }
+
+    componentWillMount() {
+        this._buscarEstorias();
+    }
+
+    _buscarEstorias() {
+        jQuery.ajax({
+            method: 'GET',
+            url: 'http://10.54.1.13:3001/estorias',
+            success: estorias => this.setState({estorias})
+        });
     }
 
     render() {
@@ -34,9 +44,12 @@ class Taskboard extends Component {
         const estoria = {
             titulo, 
             pontos, 
-            descricao,
-            id: this.state.estorias.length + 1 
+            descricao
         };
+        jQuery.post('http://10.54.1.13:3001/estorias', estoria)
+            .success(novaEstoria => {
+                this.setState({estorias:this.state.estorias.concat([novaEstoria]) }
+            ); 
 
         this.setState({
             estorias: this.state.estorias.concat([estoria])
@@ -47,7 +60,9 @@ class Taskboard extends Component {
         return this.state.estorias.map(estoria => 
             <Estoria 
                 titulo={estoria.titulo} descricao={estoria.descricao}
-                pontos={estoria.pontos} key={estoria.id}/>);
+                pontos={estoria.pontos} key={estoria.id}
+                id={estoria.id}
+                onDelete={this._excluirEstoria.bind(this)}/>);
     }
 
     _getTitulo(totalDeEstorias) {
@@ -62,6 +77,24 @@ class Taskboard extends Component {
             titulo = `${totalDeEstorias} estórias`;
         }
         return titulo;
+    }
+
+    componentDidMount() {
+        this._timer = setTimeout(() => this._buscarEstorias(), 5000);
+    }
+
+    componentWillUnmount() {
+        clearTimeout(this._timer);
+    }
+
+    _excluirEstoria(idEstoria) {
+        jQuery.ajax({
+            method: 'DELETE',
+            url: `http://10.54.1.13:3001/estorias/${idEstoria}`
+        });
+        const estorias = [...this.state.estorias];
+        estorias.splice(idEstoria, 1);
+        this.setState({estorias});
     }
 }
 
