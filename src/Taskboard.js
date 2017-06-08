@@ -18,7 +18,7 @@ class Taskboard extends Component {
     _buscarEstorias() {
         jQuery.ajax({
             method: 'GET',
-            url: 'http://10.54.1.13:3001/estorias',
+            url: 'http://localhost:3001/estorias',
             success: estorias => this.setState({estorias})
         });
     }
@@ -46,14 +46,11 @@ class Taskboard extends Component {
             pontos, 
             descricao
         };
-        jQuery.post('http://10.54.1.13:3001/estorias', estoria)
-            .success(novaEstoria => {
-                this.setState({estorias:this.state.estorias.concat([novaEstoria]) }
-            ); 
-
-        this.setState({
-            estorias: this.state.estorias.concat([estoria])
-        });
+        jQuery.post('http://localhost:3001/estorias', estoria)
+            .done(novaEstoria => {
+                this.setState({estorias: this.state.estorias.concat([novaEstoria])}
+            );
+        }); 
     }
 
      _getEstorias() {
@@ -80,21 +77,21 @@ class Taskboard extends Component {
     }
 
     componentDidMount() {
-        this._timer = setTimeout(() => this._buscarEstorias(), 5000);
+        this._timer = setInterval(() => this._buscarEstorias(), 5000);
     }
 
     componentWillUnmount() {
-        clearTimeout(this._timer);
+        console.log("Limpando o interval...");
+        clearInterval(this._timer);
     }
 
     _excluirEstoria(idEstoria) {
         jQuery.ajax({
             method: 'DELETE',
-            url: `http://10.54.1.13:3001/estorias/${idEstoria}`
+            url: `http://localhost:3001/estorias/${idEstoria}`
         });
-        const estorias = [...this.state.estorias];
-        estorias.splice(idEstoria, 1);
-        this.setState({estorias});
+        
+        this.setState({estorias: this.state.estorias.filter(item => item.id !== idEstoria)});
     }
 }
 

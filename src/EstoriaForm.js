@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 class EstoriaFrom extends Component {
     render() {
         return(
-            <div class="row">
+            <div className="row">
                 <form className="col s12" onSubmit={this._handleSubmit.bind(this)}>
                     <h5>+1 Estória</h5>
                     <div className="input-field col s12">
